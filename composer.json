@@ -1,0 +1,24 @@
+{
+    "name": "lapress/models",
+    "type": "library",
+    "authors": [
+        {
+            "name": "seszcze",
+            "email": "sebastian@ably.pl"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "LaPress\\Models\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaPress\\Models\\ModelsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}
