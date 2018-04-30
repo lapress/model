@@ -211,7 +211,9 @@ abstract class AbstractPost extends Model
 
     public function getUrlAttribute(): ?string
     {
-        return (new PostUrlGenerator($this))->get();
+        $class = (new UrlGeneratorResolver())->resolve($this->post_type);
+
+        return (new $class($this))->get();
     }
 
     public function getClassesAttribute(): string
@@ -236,6 +238,4 @@ abstract class AbstractPost extends Model
         return $this->belongsToMany(Category::class, 'term_relationships', 'object_id', 'term_taxonomy_id')
                     ->where('taxonomy', 'category');
     }
-    
-    
 }
