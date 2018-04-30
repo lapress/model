@@ -214,7 +214,6 @@ abstract class AbstractPost extends Model
     {
         $class = (new UrlGeneratorResolver())->resolve($this->post_type);
 
-        dump($class);die();
         return (new $class($this))->get();
     }
 

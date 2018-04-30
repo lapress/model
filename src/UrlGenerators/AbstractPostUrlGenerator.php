@@ -2,7 +2,7 @@
 
 namespace LaPress\Models\UrlGenerators;
 
-use LaPress\Models\Post;
+use LaPress\Models\AbstractPost;
 
 /**
  * @author    Sebastian Szczepański
@@ -17,9 +17,9 @@ abstract class AbstractPostUrlGenerator implements UrlGenerator
     protected $post;
 
     /**
-     * @param Post $post
+     * @param AbstractPost $post
      */
-    public function __construct(Post $post)
+    public function __construct(AbstractPost $post)
     {
         $this->post = $post;
     }
