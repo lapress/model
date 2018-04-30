@@ -48,4 +48,20 @@ class Term extends Model
 
         return (new $class($this))->get();
     }
+
+    public function getUrlGenerator()
+    {
+        $type = ucfirst($this->taxonomy->taxonomy);
+        dump($type);die();
+
+        if (class_exists('App\\UrlGenerators\\'.$type.'UrlGenerator')) {
+            return 'App\\UrlGenerators\\'.$type.'UrlGenerator';
+        }
+
+        if (class_exists('LaPress\\UrlGenerators\\'.$type.'UrlGenerator')) {
+            return 'LaPress\\UrlGenerators\\'.$type.'UrlGenerator';
+        }
+
+        return 'LaPress\\Models\\UrlGenerators\\CategoryUrlGenerator';
+    }
 }

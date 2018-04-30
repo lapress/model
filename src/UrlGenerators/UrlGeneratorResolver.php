@@ -15,6 +15,7 @@ class UrlGeneratorResolver
     public function resolve(string $key)
     {
         $type = ucfirst($key);
+
         if (class_exists('App\\UrlGenerators\\'.$type.'UrlGenerator')) {
             return 'App\\UrlGenerators\\'.$type.'UrlGenerator';
         }
