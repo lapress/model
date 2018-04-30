@@ -3,6 +3,7 @@
 namespace LaPress\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
@@ -36,6 +37,23 @@ class Taxonomy extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * Posts
+     * Define a relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function posts()
+    {
+        $class = \App\Post::class;
+
+        if (!class_exists($class)) {
+            $class = Post::class;
+        }
+
+        return $this->belongsToMany($class, 'term_relationships', 'term_taxonomy_id', 'object_id');
+    }
 
     /**
      * term
@@ -93,7 +111,7 @@ class Taxonomy extends Model
             'name'  => $this->term->name,
             'slug'  => $this->term->slug,
             'count' => $this->count,
-            'type' => $this->taxonomy,
+            'type'  => $this->taxonomy,
         ];
     }
 }
