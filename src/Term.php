@@ -54,7 +54,6 @@ class Term extends Model
     public function getUrlGenerator()
     {
         $type = ucfirst($this->taxonomy->taxonomy);
-        dump($type);die();
 
         if (class_exists('App\\UrlGenerators\\'.$type.'UrlGenerator')) {
             return 'App\\UrlGenerators\\'.$type.'UrlGenerator';
