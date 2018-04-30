@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use LaPress\Models\Scopes\PostTypeScope;
 use LaPress\Models\Traits\HasMeta;
 use LaPress\Models\UrlGenerators\PostUrlGenerator;
+use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
 use LaPress\Support\Filters\Filterable;
 use LaPress\Support\WordPress\WordPressPostContentFormatter;
 

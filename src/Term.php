@@ -44,8 +44,10 @@ class Term extends Model
 
     public function getUrlAttribute()
     {
-        $class = (new UrlGeneratorResolver())->resolve($this->taxonomy->taxonomy);
-
+//        $class = (new UrlGeneratorResolver())->resolve($this->taxonomy->taxonomy);
+//
+        $class = $this->getUrlGenerator();
+        
         return (new $class($this))->get();
     }
 
