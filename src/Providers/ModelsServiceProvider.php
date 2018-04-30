@@ -1,6 +1,6 @@
 <?php
 
-namespace LaPress\Models;
+namespace LaPress\Models\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
