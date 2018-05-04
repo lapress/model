@@ -112,6 +112,7 @@ class Taxonomy extends Model
             'slug'  => $this->term->slug,
             'count' => $this->count,
             'type'  => $this->taxonomy,
+            'url'   => $this->url,
         ];
     }
 }
