@@ -4,6 +4,7 @@ namespace LaPress\Models\DataProviders;
 
 use LaPress\Models\AbstractPost;
 use SEO;
+
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
