@@ -28,6 +28,9 @@ class ImageSize
         $this->extractBasePath();
     }
 
+    /**
+     *
+     */
     public function extractBasePath()
     {
         $this->basePath = sprintf(static::PATH, dirname($this->data->get('file')));
@@ -42,9 +45,27 @@ class ImageSize
         if ($size == 'full') {
             return '/wp-content/uploads/'.$this->data->get('file');
         }
-        $sizeArray = $this->data->get('sizes')[$size];
+        $sizeArray = $this->toArray($size);
 
         return $this->basePath.$sizeArray['file'];
+    }
+
+    /**
+     * @param string $size
+     * @return array
+     */
+    public function toArray(string $size)
+    {
+        return $this->data->get('sizes')[$size];
+    }
+
+    /**
+     * @param string $size
+     * @return Collection
+     */
+    public function collect(string $size)
+    {
+        return collect($this->toArray($size));
     }
 
     /**
