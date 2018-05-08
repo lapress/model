@@ -166,6 +166,22 @@ abstract class AbstractPost extends Model
     }
 
     /**
+     * @return bool
+     */
+    public function isPublic(): bool
+    {
+        return $this->post_status == static::STATUS_POST_PUBLISHED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDraft(): bool
+    {
+        return $this->post_status == static::STATUS_POST_DRAFT;
+    }
+
+    /**
      * @return string
      */
     public function getPostType(): string
@@ -205,11 +221,17 @@ abstract class AbstractPost extends Model
         return $this->supportedTaxonomies;
     }
 
+    /**
+     * @return null|string
+     */
     public function getAnchorAttribute(): ?string
     {
         return $this->post_title;
     }
 
+    /**
+     * @return null|string
+     */
     public function getUrlAttribute(): ?string
     {
         $class = (new UrlGeneratorResolver())->resolve($this->post_type);
@@ -217,6 +239,9 @@ abstract class AbstractPost extends Model
         return (new $class($this))->get();
     }
 
+    /**
+     * @return string
+     */
     public function getClassesAttribute(): string
     {
         $classes = $this->meta->_menu_item_classes;
@@ -229,11 +254,17 @@ abstract class AbstractPost extends Model
     }
 
 
+    /**
+     * @return string
+     */
     public function getBodyAttribute()
     {
         return WordPressPostContentFormatter::format($this->post_content);
     }
 
+    /**
+     * @return $this
+     */
     public function categories()
     {
         $class = class_exists(\App\Category::class) ? \App\Category::class : Category::class;
