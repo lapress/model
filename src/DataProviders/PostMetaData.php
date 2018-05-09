@@ -17,7 +17,7 @@ class PostMetaData
     public static function provide(AbstractPost $post)
     {
         SEO::setTitle($post->post_title);
-        SEO::setDescription($post->post_excerpt);
+        SEO::setDescription($post->excerpt);
         SEO::opengraph()
            ->setType('article')
            ->setArticle([

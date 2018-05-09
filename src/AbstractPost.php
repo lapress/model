@@ -272,4 +272,13 @@ abstract class AbstractPost extends Model
         return $this->belongsToMany($class, 'term_relationships', 'object_id', 'term_taxonomy_id')
                     ->where('taxonomy', 'category');
     }
+
+    public function getExcerptAttribute()
+    {
+        if ($this->post_excerpt) {
+            return $this->post_excerpt;
+        }
+        
+        return str_limit(strip_tags($this->post_content), 200);
+    }
 }
