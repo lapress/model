@@ -3,6 +3,7 @@
 namespace LaPress\Models;
 
 use Illuminate\Support\Collection;
+
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
@@ -53,7 +54,7 @@ class ImageSize
      */
     public function toArray(string $size)
     {
-        return $this->data->get('sizes')[$size] ?? $this->data->toArray();
+        return $this->data->get('sizes')[$size] ?? $this->getFullSizeToArray();
     }
 
     /**
@@ -71,9 +72,7 @@ class ImageSize
      */
     function __get($name)
     {
-        if ($this->hasSize($name) || $name == 'full') {
-            return $this->get($name);
-        }
+        return $this->get($name);
     }
 
     /**
@@ -92,5 +91,17 @@ class ImageSize
     public function buildUrl(string $fileName): string
     {
         return $this->basePath.$fileName;
+    }
+
+    /**
+     * @return array
+     */
+    private function getFullSizeToArray(): array
+    {
+        return [
+            'width'  => $this->data->get('width'),
+            'height' => $this->data->get('height'),
+            'file'   => basename($this->data->get('file')),
+        ];
     }
 }
