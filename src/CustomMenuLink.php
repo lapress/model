@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace LaPress\Models;
 
 use LaPress\Models\AbstractPost;
 
