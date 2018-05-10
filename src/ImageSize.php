@@ -42,12 +42,9 @@ class ImageSize
      */
     public function get($size)
     {
-        if ($size == 'full') {
-            return '/wp-content/uploads/'.$this->data->get('file');
-        }
         $sizeArray = $this->toArray($size);
 
-        return $this->basePath.$sizeArray['file'];
+        return $this->buildUrl($sizeArray['file']);
     }
 
     /**
@@ -56,7 +53,7 @@ class ImageSize
      */
     public function toArray(string $size)
     {
-        return $this->data->get('sizes')[$size];
+        return $this->data->get('sizes')[$size] ?? $this->data->toArray();
     }
 
     /**
@@ -86,5 +83,14 @@ class ImageSize
     private function hasSize($name): bool
     {
         return !empty($this->data->get('sizes')[$name]);
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     */
+    public function buildUrl(string $fileName): string
+    {
+        return $this->basePath.$fileName;
     }
 }
