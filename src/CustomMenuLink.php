@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use LaPress\Models\AbstractPost;
 
-use App\Support\WordPress\PostModel;
-
-class CustomMenuLink extends PostModel
+/**
+ * @author    Sebastian Szczepański
+ * @copyright ably
+ */
+class CustomMenuLink extends AbstractPost
 {
     protected $postType = 'nav_menu_item';
     protected $with = ['meta'];
