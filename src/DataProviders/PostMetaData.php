@@ -23,7 +23,6 @@ class PostMetaData
            ->setArticle([
                'published_time' => $post->post_date,
                'modified_time' => $post->post_modified,
-               'tag' => $post->categories->pluck('name')
            ]);
 
         if ($post->thumbnail) {
