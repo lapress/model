@@ -281,4 +281,9 @@ abstract class AbstractPost extends Model
         
         return str_limit(strip_tags($this->post_content), 200);
     }
+
+    public function scopeRecent($query)
+    {
+        $query->latest('post_date')->published();
+    }
 }
