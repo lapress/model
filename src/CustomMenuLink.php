@@ -2,15 +2,25 @@
 
 namespace App\Models;
 
-
-use App\Support\WordPress\PostModel;
-
-class CustomMenuLink extends PostModel
+/**
+ * @author    Sebastian Szczepański
+ * @copyright ably
+ */
+class CustomMenuLink extends AbstractPost
 {
+    /**
+     * @var string
+     */
     protected $postType = 'nav_menu_item';
+
+    /**
+     * @var array
+     */
     protected $with = ['meta'];
 
-
+    /**
+     * @return null|string
+     */
     public function getUrlAttribute(): ?string
     {
         return $this->meta->_menu_item_url;
