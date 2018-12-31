@@ -28,10 +28,7 @@ class ImageSize
         $this->data = collect($data);
         $this->extractBasePath();
     }
-
-    /**
-     *
-     */
+    
     public function extractBasePath()
     {
         $this->basePath = sprintf(static::PATH, dirname($this->data->get('file')));
