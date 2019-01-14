@@ -192,6 +192,14 @@ abstract class AbstractPost extends Model
     /**
      * @return string
      */
+    public function getPostTypePlural(): string
+    {
+        return str_plural($this->getPostType());
+    }
+
+    /**
+     * @return string
+     */
     public function getSlug(): string
     {
         return $this->postType;
@@ -278,12 +286,17 @@ abstract class AbstractPost extends Model
         if ($this->post_excerpt) {
             return $this->post_excerpt;
         }
-        
+
         return str_limit(strip_tags($this->post_content), 200);
     }
 
     public function scopeRecent($query)
     {
         $query->latest('post_date')->published();
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->post_status === static::STATUS_POST_PUBLISHED;
     }
 }

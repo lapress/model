@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
  */
 class ImageSize
 {
-    const PATH = '/wp-content/uploads/%s/';
+    const PATH = '/uploads/%s/';
     /**
      * @var string
      */
@@ -31,7 +31,7 @@ class ImageSize
     
     public function extractBasePath()
     {
-        $this->basePath = sprintf(static::PATH, dirname($this->data->get('file')));
+        $this->basePath = sprintf(WP_CONTENT_URL.static::PATH, dirname($this->data->get('file')));
     }
 
     /**

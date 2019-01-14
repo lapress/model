@@ -31,6 +31,7 @@ class MenuItem extends AbstractPost
         return optional($this->instance())->url;
     }
 
+
     /**
      * @return array
      */
