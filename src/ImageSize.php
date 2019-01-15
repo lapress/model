@@ -31,7 +31,7 @@ class ImageSize
     
     public function extractBasePath()
     {
-        $this->basePath = sprintf(WP_CONTENT_URL.static::PATH, dirname($this->data->get('file')));
+        $this->basePath = sprintf(config('wordpress.content.url').static::PATH, dirname($this->data->get('file')));
     }
 
     /**
