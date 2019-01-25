@@ -48,6 +48,6 @@ class Post extends AbstractPost
      */
     public function searchableAs(): string
     {
-        return strtolower(class_basename(get_class()));
+        return str_plural(strtolower(class_basename(get_class())));
     }
 }
