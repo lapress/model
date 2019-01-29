@@ -2,6 +2,7 @@
 
 namespace LaPress\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use LaPress\Models\Scopes\PostTypeScope;
@@ -60,6 +61,15 @@ abstract class AbstractPost extends Model
      */
     protected $dates = ['post_date', 'post_modified'];
 
+
+    protected $attributes = [
+        'post_content_filtered' => '',
+        'to_ping'               => '',
+        'pinged'                => '',
+        'post_content'          => '',
+        'post_excerpt'          => '',
+    ];
+
     /**
      * @var array
      */
@@ -86,6 +96,24 @@ abstract class AbstractPost extends Model
             if (empty($post->post_name)) {
                 $post->post_name = str_slug($post->post_title);
             }
+            $date = Carbon::now();
+
+            if (empty($post->post_date)) {
+                $post->post_date = $date;
+            }
+
+            if (empty($post->post_date_gmt)) {
+                $post->post_date_gmt = $date->subHour();
+            }
+
+            if (empty($post->post_modified)) {
+                $post->post_modified = $date;
+            }
+
+            if (empty($post->post_modified_gmt)) {
+                $post->post_modified_gmt = $date->subHour();
+            }
+
             $post->post_type = $post->getPostType();
         });
 
