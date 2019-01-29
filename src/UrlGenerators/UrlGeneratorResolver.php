@@ -20,10 +20,10 @@ class UrlGeneratorResolver
             return 'App\\Http\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
-        if (class_exists('LaPress\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'LaPress\\UrlGenerators\\'.$type.'UrlGenerator';
+        if (class_exists('LaPress\\Models\\UrlGenerators\\'.$type.'UrlGenerator')) {
+            return 'LaPress\\Models\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
-        return 'LaPress\\UrlGenerators\\PostUrlGenerator';
+        return 'LaPress\\Models\\UrlGenerators\\PostUrlGenerator';
     }
 }
