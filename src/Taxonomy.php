@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Taxonomy extends Model
 {
+    const TAXONOMY_KEY = 'category';
+
     /**
      * The table associated with the model.
      *
@@ -114,5 +116,24 @@ class Taxonomy extends Model
             'type'  => $this->taxonomy,
             'url'   => $this->url,
         ];
+    }
+
+    /**
+     * @param string $name
+     * @param null $slug
+     * @return Taxonomy
+     */
+    public static function add(string $name, $slug = null): Taxonomy
+    {
+        $term = Term::create([
+            'name' => $name,
+            'slug' => $slug ?: str_slug($name),
+        ]);
+
+        return static::create([
+            'description' => '' ,
+            'taxonomy' => static::TAXONOMY_KEY,
+            'term_id' => $term->term_id,
+        ]);
     }
 }

@@ -51,23 +51,4 @@ class Category extends Taxonomy
             $query->whereSlug($name);
         })->first();
     }
-
-    /**
-     * @param string $name
-     * @param null $slug
-     * @return Category
-     */
-    public static function add(string $name, $slug = null)
-    {
-        $term = Term::create([
-            'name' => $name,
-            'slug' => $slug ?: str_slug($name), 
-        ]);
-        
-        return static::create([
-            'description' => '' ,
-            'taxonomy' => static::TAXONOMY_KEY,
-            'term_id' => $term->term_id;
-        ]);
-    }
 }
