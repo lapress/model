@@ -16,14 +16,14 @@ class UrlGeneratorResolver
     {
         $type = ucfirst($key);
 
-        if (class_exists('App\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'App\\UrlGenerators\\'.$type.'UrlGenerator';
+        if (class_exists('App\\Http\\UrlGenerators\\'.$type.'UrlGenerator')) {
+            return 'App\\Http\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
         if (class_exists('LaPress\\UrlGenerators\\'.$type.'UrlGenerator')) {
             return 'LaPress\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
-        return 'LaPress\\Models\\UrlGenerators\\PostUrlGenerator';
+        return 'LaPress\\UrlGenerators\\PostUrlGenerator';
     }
 }
