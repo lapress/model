@@ -40,15 +40,4 @@ class Category extends Taxonomy
     {
         return $this->term->url;
     }
-
-    /**
-     * @param string $name
-     * @return Category|null
-     */
-    public static function getByName(string $name)
-    {
-        return static::whereHas('term', function ($query) use ($name) {
-            $query->whereSlug($name);
-        })->first();
-    }
 }
