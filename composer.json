@@ -7,7 +7,9 @@
             "email": "sebastian@ably.pl"
         }
     ],
-    "require": {},
+    "require": {
+        "lapress/events": "dev-master"
+    },
     "autoload": {
         "psr-4": {
             "LaPress\\Models\\": "src/"
