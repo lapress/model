@@ -12,6 +12,7 @@ class Menu extends Taxonomy
 {
     use HasMeta;
 
+    const TAXONOMY_KEY = 'nav_menu';
     const NAV_MENU_LOCATION_KEY = 'nav_menu_locations';
 
     /**
