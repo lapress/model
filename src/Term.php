@@ -12,6 +12,10 @@ use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
 class Term extends Model
 {
     /**
+     * @var array
+     */
+    protected $guarded = [];
+    /**
      * @var string
      */
     protected $table = 'terms';
@@ -37,11 +41,17 @@ class Term extends Model
         return $this->hasOne(Taxonomy::class, 'term_id');
     }
 
+    /**
+     * @return mixed
+     */
     public function getAnchorAttribute()
     {
         return $this->name;
     }
 
+    /**
+     * @return mixed
+     */
     public function getUrlAttribute()
     {
 //        $class = (new UrlGeneratorResolver())->resolve($this->taxonomy->taxonomy);
@@ -51,6 +61,9 @@ class Term extends Model
         return (new $class($this))->get();
     }
 
+    /**
+     * @return string
+     */
     public function getUrlGenerator()
     {
         $type = ucfirst($this->taxonomy->taxonomy);
