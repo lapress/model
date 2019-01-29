@@ -13,6 +13,10 @@ class Taxonomy extends Model
     const TAXONOMY_KEY = 'category';
 
     /**
+     * @var array
+     */
+    protected $guarded = [];
+    /**
      * The table associated with the model.
      *
      * @var string
