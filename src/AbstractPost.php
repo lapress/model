@@ -83,6 +83,9 @@ abstract class AbstractPost extends Model
         parent::boot();
 
         self::creating(function ($post) {
+            if (empty($post->post_name)) {
+                $post->post_name = str_slug($post->post_title);
+            }
             $post->post_type = $post->getPostType();
         });
 

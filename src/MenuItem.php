@@ -74,4 +74,29 @@ class MenuItem extends AbstractPost
 
         return config('wordpress.posts.map.'.$key) ?: $key;
     }
+
+    /**
+     * @param string $name
+     * @param string $url
+     * @param array  $options
+     * @return mixed
+     */
+    public static function addCustom(string $name, string $url, $options = [])
+    {
+        $post = static::create([
+            'post_title' => $name,
+        ]);
+
+        $post->saveMeta([
+            '_menu_item_type'             => 'custom',
+            '_menu_item_menu_item_parent' => 0,
+            '_menu_item_object_id'        => $post->ID,
+            '_menu_item_object'           => 'custom',
+            '_menu_item_target'           => $options['target'] ?? '',
+            '_menu_item_classes'          => $options['classess'] ?? '',
+            '_menu_item_url'              => $url,
+        ]);
+
+        return $post;
+    }
 }
