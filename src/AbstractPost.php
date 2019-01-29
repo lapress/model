@@ -98,16 +98,8 @@ abstract class AbstractPost extends Model
             }
             $date = Carbon::now();
 
-            if (empty($post->post_date)) {
-                $post->post_date = $date;
-            }
-
             if (empty($post->post_date_gmt)) {
                 $post->post_date_gmt = $date->subHour();
-            }
-
-            if (empty($post->post_modified)) {
-                $post->post_modified = $date;
             }
 
             if (empty($post->post_modified_gmt)) {
