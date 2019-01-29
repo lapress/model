@@ -24,6 +24,6 @@ class UrlGeneratorResolver
             return 'LaPress\\Models\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
-        return 'LaPress\\Models\\UrlGenerators\\PostUrlGenerator';
+        return PostUrlGenerator::class;
     }
 }
