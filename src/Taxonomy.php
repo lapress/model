@@ -124,7 +124,7 @@ class Taxonomy extends Model
 
     /**
      * @param string $name
-     * @param null $slug
+     * @param null   $slug
      * @return Taxonomy
      */
     public static function add(string $name, $slug = null): Taxonomy
@@ -135,9 +135,9 @@ class Taxonomy extends Model
         ]);
 
         return static::create([
-            'description' => '' ,
-            'taxonomy' => static::TAXONOMY_KEY,
-            'term_id' => $term->term_id,
+            'description' => '',
+            'taxonomy'    => static::TAXONOMY_KEY,
+            'term_id'     => $term->term_id,
         ]);
     }
 
@@ -150,5 +150,15 @@ class Taxonomy extends Model
         return static::whereHas('term', function ($query) use ($name) {
             $query->whereSlug($name);
         })->first();
+    }
+
+    public function belongsToManyPostType($class)
+    {
+        return $this->belongsToMany(
+            $class,
+            'term_relationships',
+            'term_taxonomy_id',
+            'object_id'
+        );
     }
 }
