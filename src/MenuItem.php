@@ -13,6 +13,14 @@ class MenuItem extends AbstractPost
 {
     use HasMeta;
 
+    /**
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
+     * @var string
+     */
     protected $postType = 'nav_menu_item';
 
     /**
