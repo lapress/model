@@ -3,6 +3,7 @@
 namespace LaPress\Models;
 
 use LaPress\Models\Traits\HasMeta;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @author    Sebastian Szczepański
@@ -29,6 +30,15 @@ class Menu extends Taxonomy
      * @var array
      */
     protected $hidden = ['term'];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(static::TAXONOMY_KEY, function (Builder $builder) {
+            $builder->whereTaxonomy(static::TAXONOMY_KEY);
+        });
+    }
 
     /**
      * @return string|null
