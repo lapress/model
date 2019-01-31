@@ -66,13 +66,13 @@ class Taxonomy extends Model
      */
     public function posts()
     {
-        $class = \App\Post::class;
+        $class = \App\Models\Post::class;
 
         if (!class_exists($class)) {
             $class = Post::class;
         }
 
-        return $this->belongsToMany($class, 'term_relationships', 'term_taxonomy_id', 'object_id');
+        return $this->belongsToMany($class, 'term_relationships', 'term_taxonomy_id', 'object_id')->recent();
     }
 
     /**
