@@ -166,6 +166,10 @@ class Taxonomy extends Model
         })->first();
     }
 
+    /**
+     * @param $class
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function belongsToManyPostType($class)
     {
         return $this->belongsToMany(
@@ -174,5 +178,13 @@ class Taxonomy extends Model
             'term_taxonomy_id',
             'object_id'
         );
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlAttribute()
+    {
+        return $this->term->url;
     }
 }

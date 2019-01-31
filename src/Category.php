@@ -25,19 +25,5 @@ class Category extends Taxonomy
         });
     }
 
-    /**
-     * @return string
-     */
-    public function getNameAttribute()
-    {
-        return $this->term->name;
-    }
 
-    /**
-     * @return string
-     */
-    public function getUrlAttribute()
-    {
-        return $this->term->url;
-    }
 }

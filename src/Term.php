@@ -3,6 +3,7 @@
 namespace LaPress\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use LaPress\Models\UrlGenerators\CategoryUrlGenerator;
 use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
 
 /**
@@ -54,28 +55,11 @@ class Term extends Model
      */
     public function getUrlAttribute()
     {
-//        $class = (new UrlGeneratorResolver())->resolve($this->taxonomy->taxonomy);
-//
-        $class = $this->getUrlGenerator();
-        
+        $class = (new UrlGeneratorResolver())->resolve(
+            $this->taxonomy->taxonomy,
+            CategoryUrlGenerator::class
+        );
+
         return (new $class($this))->get();
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrlGenerator()
-    {
-        $type = ucfirst($this->taxonomy->taxonomy);
-
-        if (class_exists('App\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'App\\UrlGenerators\\'.$type.'UrlGenerator';
-        }
-
-        if (class_exists('LaPress\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'LaPress\\UrlGenerators\\'.$type.'UrlGenerator';
-        }
-
-        return 'LaPress\\Models\\UrlGenerators\\CategoryUrlGenerator';
     }
 }
