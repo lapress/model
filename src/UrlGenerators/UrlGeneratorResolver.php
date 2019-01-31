@@ -10,20 +10,21 @@ class UrlGeneratorResolver
 {
     /**
      * @param string $key
+     * @param null   $default
      * @return string
      */
-    public function resolve(string $key)
+    public function resolve(string $key, $default = null)
     {
-        $type = ucfirst($key);
+        $type = ucfirst(camel_case($key));
 
         if (class_exists('App\\Http\\UrlGenerators\\'.$type.'UrlGenerator')) {
             return 'App\\Http\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
-        if (class_exists('LaPress\\Models\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'LaPress\\Models\\UrlGenerators\\'.$type.'UrlGenerator';
+        if (class_exists('LaPress\\UrlGenerators\\'.$type.'UrlGenerator')) {
+            return 'LaPress\\UrlGenerators\\'.$type.'UrlGenerator';
         }
 
-        return PostUrlGenerator::class;
+        return $default ?: PostUrlGenerator::class;
     }
 }
