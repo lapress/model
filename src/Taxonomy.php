@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Taxonomy extends Model
 {
-    const TAXONOMY_KEY = 'category';
+    const TAXONOMY_KEY = null;
 
     /**
      * @var array
@@ -43,6 +43,19 @@ class Taxonomy extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public static function boot()
+    {
+        parent::boot();
+
+        if (empty(static::TAXONOMY_KEY)) {
+            return;
+        }
+
+        static::addGlobalScope(static::TAXONOMY_KEY, function (Builder $builder) {
+            $builder->whereTaxonomy(static::TAXONOMY_KEY);
+        });
+    }
 
     /**
      * Posts
