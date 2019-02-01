@@ -27,6 +27,11 @@ abstract class AbstractPost extends Model
     const STATUS_POST_DRAFT = 'draft';
 
     /**
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
      * @var string
      */
     protected $table = 'posts';
@@ -62,6 +67,9 @@ abstract class AbstractPost extends Model
     protected $dates = ['post_date', 'post_modified'];
 
 
+    /**
+     * @var array
+     */
     protected $attributes = [
         'post_content_filtered' => '',
         'to_ping'               => '',
@@ -81,6 +89,9 @@ abstract class AbstractPost extends Model
         'to_ping',
     ];
 
+    /**
+     * @var array
+     */
     protected $with = ['meta'];
 
     /**
@@ -304,6 +315,9 @@ abstract class AbstractPost extends Model
                     ->where('taxonomy', 'category');
     }
 
+    /**
+     * @return mixed|string
+     */
     public function getExcerptAttribute()
     {
         if ($this->post_excerpt) {
@@ -313,11 +327,17 @@ abstract class AbstractPost extends Model
         return str_limit(strip_tags($this->post_content), 200);
     }
 
+    /**
+     * @param $query
+     */
     public function scopeRecent($query)
     {
         $query->latest('post_date')->published();
     }
 
+    /**
+     * @return bool
+     */
     public function isPublished(): bool
     {
         return $this->post_status === static::STATUS_POST_PUBLISHED;
