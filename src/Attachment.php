@@ -60,9 +60,11 @@ class Attachment extends AbstractPost
             'post_status'           => 'inherit',
             'ping_status'           => 'closed',
         ];
-
+        $file = $data['guid'] ?? '';
+        $path = config('wordpress.content.url').'/uploads/';
+        $data['guid'] = $path.$file;
         $attachment = self::create(array_merge($base, $data));
-        $file = str_after($base['guid'] ?? '', config('wordpress.content.url'));
+
         $metaData = [
             '_wp_attached_file'       => $file,
             '_wp_attachment_metadata' => serialize([
