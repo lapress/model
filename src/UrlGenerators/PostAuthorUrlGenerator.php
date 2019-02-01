@@ -11,6 +11,8 @@ class PostAuthorUrlGenerator implements UrlGenerator
 {
     const PATTERN = '/author/%s';
 
+
+
     /**
      * @var User
      */
