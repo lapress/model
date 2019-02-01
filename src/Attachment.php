@@ -61,7 +61,7 @@ class Attachment extends AbstractPost
 
         $attachment = self::create(array_merge($base, $data));
         $file = str_after($base['guid'] ?? '', config('wordpress.content.url'));
-        $meta = [
+        $metaData = [
             '_wp_attached_file'       => $file,
             '_wp_attachment_metadata' => serialize([
                 'width'      => $width,
@@ -86,7 +86,7 @@ class Attachment extends AbstractPost
             ])
         ];
 
-        $attachment->saveMeta($meta);
+        $attachment->saveMeta(array_merge($metaData, $meta));
 
         return $attachment;
     }
