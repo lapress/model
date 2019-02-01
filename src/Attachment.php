@@ -57,6 +57,8 @@ class Attachment extends AbstractPost
             'pinged'                => '',
             'post_content'          => '',
             'post_excerpt'          => '',
+            'post_status'           => 'inherit',
+            'ping_status'           => 'closed',
         ];
 
         $attachment = self::create(array_merge($base, $data));
@@ -83,7 +85,7 @@ class Attachment extends AbstractPost
                         'orientation'       => '0',
                         'keywords'          => [],
                     ],
-            ])
+            ]),
         ];
 
         $attachment->saveMeta(array_merge($metaData, $meta));
