@@ -11,7 +11,7 @@ class TermMeta extends AbstractMeta
     /**
      * @var string
      */
-    protected $table = 'postmeta';
+    protected $table = 'termmeta';
 
     protected $fillable = [
         'meta_value',
