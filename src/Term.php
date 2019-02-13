@@ -3,6 +3,7 @@
 namespace LaPress\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use LaPress\Models\Traits\HasMeta;
 use LaPress\Models\UrlGenerators\CategoryUrlGenerator;
 use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
 
@@ -12,6 +13,7 @@ use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
  */
 class Term extends Model
 {
+    use HasMeta;
     /**
      * @var array
      */
