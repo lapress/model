@@ -5,6 +5,8 @@ namespace LaPress\Models\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use LaPress\Models\Post;
 use LaPress\Models\PostMeta;
+use LaPress\Models\Term;
+use LaPress\Models\TermMeta;
 
 /**
  * @author    Sebastian Szczepański
@@ -17,6 +19,7 @@ trait HasMeta
      */
     protected $metaModels = [
         Post::class => PostMeta::class,
+        Term::class => TermMeta::class,
     ];
 
     /**
