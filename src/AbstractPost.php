@@ -309,7 +309,7 @@ abstract class AbstractPost extends Model
      */
     public function categories()
     {
-        $class = class_exists(\App\Category::class) ? \App\Category::class : Category::class;
+        $class = class_exists(\App\Models\Category::class) ? \App\Models\Category::class : Category::class;
 
         return $this->belongsToMany($class, 'term_relationships', 'object_id', 'term_taxonomy_id')
                     ->where('taxonomy', 'category');
