@@ -46,6 +46,10 @@ trait HasMeta
             return $key;
         }
 
+        if (array_key_exists(get_parent_class($key), $this->metaModels)) {
+            return get_parent_class($key);
+        }
+
         return Post::class;
     }
 
