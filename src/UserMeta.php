@@ -1,0 +1,32 @@
+<?php
+
+namespace LaPress\Models;
+
+/**
+ * @author    Sebastian Szczepański
+ * @copyright ably
+ */
+class UserMeta extends AbstractMeta
+{
+    /**
+     * @var string
+     */
+    protected $table = 'usermeta';
+
+    protected $fillable = [
+        'meta_value',
+        'meta_key',
+    ];
+
+    /**
+     * Term
+     * Define a relationship.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\\Models\\Term');
+    }
+}
+
