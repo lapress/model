@@ -59,9 +59,9 @@ trait HasMeta
      */
     public function getMetableKeyName(): ?string
     {
-        $class = $this->getMetableClass();
+        $key = str_replace('Meta', '', $this->getMetableClass());
 
-        return (new $class)->getKeyName();
+        return strtolower(class_basename($key)).'_id';
     }
 
     /**
@@ -127,7 +127,7 @@ trait HasMeta
 
         $value = is_array($value) ? serialize($value) : $value;
 
-        $result = $meta->fill(['meta_value' => $value])->save();
+        $result = $meta->update(['meta_value' => $value]);
 
         $this->load('meta');
 
