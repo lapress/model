@@ -59,9 +59,9 @@ trait HasMeta
      */
     public function getMetableKeyName(): ?string
     {
-        $key = str_replace('Meta', '', $this->getMetableClass());
+        $class = $this->getMetableClass();
 
-        return strtolower(class_basename($key)).'_id';
+        return (new $class)->getKeyName();
     }
 
     /**
