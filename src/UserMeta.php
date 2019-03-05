@@ -11,6 +11,10 @@ class UserMeta extends AbstractMeta
     /**
      * @var string
      */
+    protected $primaryKey = 'umeta_id';
+    /**
+     * @var string
+     */
     protected $table = 'usermeta';
 
     protected $fillable = [
