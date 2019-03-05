@@ -127,7 +127,7 @@ trait HasMeta
 
         $value = is_array($value) ? serialize($value) : $value;
 
-        $result = $meta->update(['meta_value' => $value]);
+        $result = $meta->fill(['meta_value' => $value])->save();
 
         $this->load('meta');
 
