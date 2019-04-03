@@ -2,6 +2,7 @@
 
 namespace LaPress\Models\DataProviders;
 
+use Illuminate\Support\Facades\Lang;
 use LaPress\Models\AbstractPost;
 use LaPress\Models\Page;
 use SEO;
@@ -22,7 +23,14 @@ class PostListMetaData
             return PostMetaData::provide($page);
         }
 
-        SEO::setTitle(ucfirst($type).' list');
+        $locale = \App::getLocale();
+        $title = ucfirst($type).' list';
+
+        if (Lang::has("pages.{$type}.title", $locale)) {
+            $title = trans("pages.{$type}.title");
+        }
+
+        SEO::setTitle($title);
         SEO::setDescription('');
     }
 }
