@@ -2,6 +2,7 @@
 
 namespace LaPress\Models;
 
+use Ably\Sitemap\HasSitemap;
 use Laravel\Scout\Searchable;
 
 /**
@@ -10,8 +11,8 @@ use Laravel\Scout\Searchable;
  */
 class Post extends AbstractPost
 {
-    use Searchable;
-
+    use HasSitemap;
+    
     /**
      * @var bool
      */
@@ -30,24 +31,54 @@ class Post extends AbstractPost
     }
 
     /**
+     * @return string
+     */
+    public function searchableAs()
+    {
+        return str_plural(strtolower(class_basename(get_class())));
+    }
+
+    /**
+     * @return Category|null
+     */
+    public function getCategoryAttribute()
+    {
+        return $this->categories()->first();
+    }
+
+    /**
+     * @return $this
+     */
+    public function categories()
+    {
+        return $this->getTaxonomyRelationship(
+            $this->getLocalizedModel('Category')
+        );
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->getTaxonomyRelationship(
+            $this->getLocalizedModel('PostTag')
+        );
+    }
+
+    /**
      * @return array
      */
     public function getSearchableArray(): array
     {
         return [
-            'ID'         => $this->ID,
-            'post_title' => $this->post_title,
-            'body'       => $this->post_content,
-            'categories' => $this->categories->pluck('name')->implode(', '),
-            'post_date'  => $this->date,
+            'ID'           => $this->ID,
+            'post_title'   => $this->post_title,
+            'post_excerpt' => $this->post_excerpt,
+            'body'         => $this->post_content,
+            'categories'   => $this->categories->pluck('name')->implode(', '),
+            'tags'         => $this->tags->pluck('name')->implode(', '),
+            'post_date'    => $this->date,
         ];
-    }
-
-    /**
-     * @return string
-     */
-    public function searchableAs(): string
-    {
-        return str_plural(strtolower(class_basename(get_class())));
     }
 }

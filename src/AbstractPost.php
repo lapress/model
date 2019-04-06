@@ -5,6 +5,7 @@ namespace LaPress\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use LaPress\Content\Str;
 use LaPress\Models\Scopes\PostTypeScope;
 use LaPress\Models\Traits\HasMeta;
 use LaPress\Models\UrlGenerators\PostUrlGenerator;
@@ -128,7 +129,15 @@ abstract class AbstractPost extends Model
 
         static::addGlobalScope(new PostTypeScope());
     }
-
+    
+    /**
+     * @return bool
+     */
+    public function hasThumbnail()
+    {
+        return $this->thumbnail && !empty($this->thumbnail->size);
+    }
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -136,6 +145,14 @@ abstract class AbstractPost extends Model
     {
         return $this->hasOne(ThumbnailMeta::class, 'post_id')
                     ->where('meta_key', '_thumbnail_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate()
+    {
+        return $this->post_date->format(config('wordpress.date-format', 'd.m.Y'));
     }
 
     /**
@@ -150,6 +167,35 @@ abstract class AbstractPost extends Model
     }
 
     /**
+     * @param string $modelClass
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getTaxonomyRelationship(string $modelClass)
+    {
+        return $this->belongsToMany($modelClass, 'term_relationships', 'object_id', 'term_taxonomy_id')
+                    ->where('taxonomy', $modelClass::TAXONOMY_KEY);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo($this->getLocalizedModel('User'), 'post_author', 'ID');
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function getLocalizedModel(string $name): string
+    {
+        return class_exists('App\\Models\\'.$name)
+            ? 'App\\Models\\'.$name
+            : 'LaPress\\Models\\'.$name;
+    }
+
+    /**
      * attachments
      * Define a relationship.
      *
@@ -160,7 +206,6 @@ abstract class AbstractPost extends Model
         return $this->hasMany(Post::class, 'post_parent')
                     ->where('post_type', 'attachment');
     }
-
 
     /**
      * @param Builder $query
@@ -294,25 +339,13 @@ abstract class AbstractPost extends Model
 
         return collect($classes)->implode(' ');
     }
-
-
+    
     /**
      * @return string
      */
     public function getBodyAttribute()
     {
         return WordPressPostContentFormatter::format($this->post_content);
-    }
-
-    /**
-     * @return $this
-     */
-    public function categories()
-    {
-        $class = class_exists(\App\Models\Category::class) ? \App\Models\Category::class : Category::class;
-
-        return $this->belongsToMany($class, 'term_relationships', 'object_id', 'term_taxonomy_id')
-                    ->where('taxonomy', 'category');
     }
 
     /**
@@ -323,8 +356,11 @@ abstract class AbstractPost extends Model
         if ($this->post_excerpt) {
             return $this->post_excerpt;
         }
-
-        return str_limit(strip_tags($this->post_content), 200);
+        
+        return Str::limit(
+            $this->post_content,
+            config('wordpress.excerpt_length', 300)
+        );
     }
 
     /**
