@@ -23,7 +23,7 @@ class Post extends AbstractPost
      */
     public function toSearchableArray()
     {
-        if ($this->isDraft()) {
+        if (!$this->isPublished()) {
             return [];
         }
 
