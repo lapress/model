@@ -89,6 +89,25 @@ trait HasMeta
         return $query;
     }
 
+    public function scopeHasNotMeta(Builder $query, $meta, $value = null)
+    {
+        $meta = is_array($meta) ? $meta : [$meta => $value];
+
+        foreach ($meta as $key => $value) {
+            $query->whereHas('meta', function ($query) use ($key, $value) {
+                if (is_string($key)) {
+                    $query->where('meta_key', $key);
+
+                    return is_null($value) ? $query : $query->where('meta_value', '!=',$value);
+                }
+
+                return $query->where('meta_key', $value);
+            });
+        }
+
+        return $query;
+    }
+
     /**
      * @return mixed
      */
