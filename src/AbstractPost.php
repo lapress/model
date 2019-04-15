@@ -150,9 +150,9 @@ abstract class AbstractPost extends Model
     /**
      * @return string
      */
-    public function getDate()
+    public function getDate($format = null)
     {
-        return $this->post_date->format(config('wordpress.date-format', 'd.m.Y'));
+        return $this->post_date->format($format ?: config('wordpress.date-format', 'd.m.Y'));
     }
 
     /**
