@@ -12,7 +12,7 @@ use Laravel\Scout\Searchable;
 class Post extends AbstractPost
 {
     use HasSitemap;
-    
+
     /**
      * @var bool
      */
@@ -78,7 +78,8 @@ class Post extends AbstractPost
             'body'         => $this->post_content,
             'categories'   => $this->categories->pluck('name')->implode(', '),
             'tags'         => $this->tags->pluck('name')->implode(', '),
-            'post_date'    => $this->date,
+            'post_date'    => $this->post_date->toDateTimeString(),
+            'timestamp'    => $this->post_date->timestamp,
         ];
     }
 }
