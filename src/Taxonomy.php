@@ -181,10 +181,22 @@ class Taxonomy extends Model
     }
 
     /**
+     * @param string $name
+     * @return string
+     */
+    public function getLocalizedModel(string $name): string
+    {
+        return class_exists('App\\Models\\'.$name)
+            ? 'App\\Models\\'.$name
+            : 'LaPress\\Models\\'.$name;
+    }
+
+    /**
      * @return string
      */
     public function getUrlAttribute()
     {
         return $this->term->url;
     }
+
 }

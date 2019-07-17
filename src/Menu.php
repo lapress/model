@@ -76,7 +76,9 @@ class Menu extends Taxonomy
      */
     public function items()
     {
-        return $this->belongsToMany(MenuItem::class, 'term_relationships', 'term_taxonomy_id', 'object_id')
-                    ->orderBy('menu_order');
+        return $this->belongsToMany($this->getLocalizedModel('MenuItem'), 'term_relationships', 'term_taxonomy_id', 'object_id')
+                    ->orderBy('menu_order')->where(function ($query){
+                        $query->hasMeta(MenuItem::META_PARENT_KEY, '0');
+                    });
     }
 }

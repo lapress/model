@@ -2,6 +2,7 @@
 
 namespace LaPress\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use LaPress\Models\Traits\HasMeta;
 
@@ -11,6 +12,7 @@ use LaPress\Models\Traits\HasMeta;
  */
 class MenuItem extends AbstractPost
 {
+    const META_PARENT_KEY = '_menu_item_menu_item_parent';
     use HasMeta;
 
     /**
@@ -57,12 +59,16 @@ class MenuItem extends AbstractPost
     public function instance(): ?Model
     {
         $className = $this->getRelationClassName();
-
         if (!class_exists($className)) {
             return null;
         }
+        $instance = app($className);
 
-        return app($className)->find($this->meta->_menu_item_object_id);
+        if ($instance instanceof Taxonomy) {
+            return $instance->whereTermId((int)$this->meta->_menu_item_object_id)->first();
+        }
+
+        return $instance->find((int)$this->meta->_menu_item_object_id);
     }
 
     /**
@@ -98,5 +104,13 @@ class MenuItem extends AbstractPost
         ]);
 
         return $post;
+    }
+
+    /**
+     * @return Collection|null
+     */
+    public function getItemsAttribute()
+    {
+        return self::hasMeta(self::META_PARENT_KEY, $this->ID)->orderBy('menu_order')->get();
     }
 }

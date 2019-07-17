@@ -15,15 +15,12 @@ class Category extends Taxonomy
      * @var array
      */
     protected $guarded = [];
-    
+
     public static function boot()
     {
         parent::boot();
-
         static::addGlobalScope(static::TAXONOMY_KEY, function (Builder $builder) {
             $builder->whereTaxonomy(static::TAXONOMY_KEY);
         });
     }
-
-
 }

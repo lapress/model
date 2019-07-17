@@ -120,4 +120,9 @@ class User extends Authenticatable
 
         return $this->hasMany($postClass, 'post_author')->recent();
     }
+
+    public static function byName($name)
+    {
+        return static::whereUserNicename($name)->first();
+    }
 }
