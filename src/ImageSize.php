@@ -28,7 +28,10 @@ class ImageSize
         $this->data = collect($data);
         $this->extractBasePath();
     }
-    
+
+    /**
+     *
+     */
     public function extractBasePath()
     {
         $this->basePath = sprintf(config('wordpress.content.url').static::PATH, dirname($this->data->get('file')));
@@ -91,9 +94,25 @@ class ImageSize
     }
 
     /**
+     * @return mixed
+     */
+    public function getWidth()
+    {
+        return $this->data->get('width');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHeight()
+    {
+        return $this->data->get('height');
+    }
+
+    /**
      * @return array
      */
-    private function getFullSizeToArray(): array
+    public function getFullSizeToArray(): array
     {
         return [
             'width'  => $this->data->get('width'),
