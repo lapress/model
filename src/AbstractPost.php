@@ -129,7 +129,7 @@ abstract class AbstractPost extends Model
 
         static::addGlobalScope(new PostTypeScope());
     }
-    
+
     /**
      * @return bool
      */
@@ -137,7 +137,7 @@ abstract class AbstractPost extends Model
     {
         return $this->thumbnail && !empty($this->thumbnail->size);
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -308,6 +308,21 @@ abstract class AbstractPost extends Model
         return $this->supportedTaxonomies;
     }
 
+    public function postFormats()
+    {
+        return $this->getTaxonomyRelationship($this->getLocalizedModel('PostFormat'));
+    }
+
+    public function getPostFormatAttribute()
+    {
+        return $this->getPostFormat()->getName();
+    }
+
+    public function getPostFormat()
+    {
+        return $this->postFormats->first();
+    }
+
     /**
      * @return null|string
      */
@@ -339,7 +354,7 @@ abstract class AbstractPost extends Model
 
         return collect($classes)->implode(' ');
     }
-    
+
     /**
      * @return string
      */
@@ -356,7 +371,7 @@ abstract class AbstractPost extends Model
         if ($this->post_excerpt) {
             return $this->post_excerpt;
         }
-        
+
         return Str::limit(
             $this->post_content,
             config('wordpress.excerpt_length', 300)
