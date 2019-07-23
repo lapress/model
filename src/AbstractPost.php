@@ -315,7 +315,7 @@ abstract class AbstractPost extends Model
 
     public function getPostFormatAttribute()
     {
-        return $this->getPostFormat()->getName();
+        return optional($this->getPostFormat())->getName();
     }
 
     public function getPostFormat()
