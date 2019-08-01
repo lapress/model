@@ -20,7 +20,7 @@ class Attachment extends AbstractPost
      */
     public function image()
     {
-        return $this->meta()->whereMetaKey('_wp_attachment_metadata')->first()->meta_value;
+        return optional($this->meta()->whereMetaKey('_wp_attachment_metadata')->first())->meta_value;
     }
 
     /**
