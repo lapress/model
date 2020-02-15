@@ -3,13 +3,14 @@
 namespace LaPress\Models;
 
 use Illuminate\Support\Collection;
+
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
  */
 class ImageSize
 {
-    const PATH = '/wp-content/uploads/%s/';
+    const PATH = '/uploads/%s/';
     /**
      * @var string
      */
@@ -28,9 +29,12 @@ class ImageSize
         $this->extractBasePath();
     }
 
+    /**
+     *
+     */
     public function extractBasePath()
     {
-        $this->basePath = sprintf(static::PATH, dirname($this->data->get('file')));
+        $this->basePath = sprintf(config('wordpress.content.url').static::PATH, dirname($this->data->get('file')));
     }
 
     /**
@@ -39,12 +43,27 @@ class ImageSize
      */
     public function get($size)
     {
-        if ($size == 'full') {
-            return '/wp-content/uploads/'.$this->data->get('file');
-        }
-        $sizeArray = $this->data->get('sizes')[$size];
+        $sizeArray = $this->toArray($size);
 
-        return $this->basePath.$sizeArray['file'];
+        return $this->buildUrl($sizeArray['file']);
+    }
+
+    /**
+     * @param string $size
+     * @return array
+     */
+    public function toArray(string $size)
+    {
+        return $this->data->get('sizes')[$size] ?? $this->getFullSizeToArray();
+    }
+
+    /**
+     * @param string $size
+     * @return Collection
+     */
+    public function collect(string $size)
+    {
+        return collect($this->toArray($size));
     }
 
     /**
@@ -53,9 +72,7 @@ class ImageSize
      */
     function __get($name)
     {
-        if ($this->hasSize($name) || $name == 'full') {
-            return $this->get($name);
-        }
+        return $this->get($name);
     }
 
     /**
@@ -65,5 +82,42 @@ class ImageSize
     private function hasSize($name): bool
     {
         return !empty($this->data->get('sizes')[$name]);
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     */
+    public function buildUrl(string $fileName): string
+    {
+        return $this->basePath.$fileName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWidth()
+    {
+        return $this->data->get('width');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHeight()
+    {
+        return $this->data->get('height');
+    }
+
+    /**
+     * @return array
+     */
+    public function getFullSizeToArray(): array
+    {
+        return [
+            'width'  => $this->data->get('width'),
+            'height' => $this->data->get('height'),
+            'file'   => basename($this->data->get('file')),
+        ];
     }
 }

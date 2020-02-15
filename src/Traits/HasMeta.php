@@ -5,6 +5,10 @@ namespace LaPress\Models\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use LaPress\Models\Post;
 use LaPress\Models\PostMeta;
+use LaPress\Models\Term;
+use LaPress\Models\TermMeta;
+use LaPress\Models\User;
+use LaPress\Models\UserMeta;
 
 /**
  * @author    Sebastian Szczepański
@@ -17,6 +21,8 @@ trait HasMeta
      */
     protected $metaModels = [
         Post::class => PostMeta::class,
+        Term::class => TermMeta::class,
+        User::class => UserMeta::class,
     ];
 
     /**
@@ -38,6 +44,10 @@ trait HasMeta
 
         if (array_key_exists($key, $this->metaModels)) {
             return $key;
+        }
+
+        if (array_key_exists(get_parent_class($key), $this->metaModels)) {
+            return get_parent_class($key);
         }
 
         return Post::class;
@@ -70,6 +80,25 @@ trait HasMeta
                     $query->where('meta_key', $key);
 
                     return is_null($value) ? $query : $query->where('meta_value', $value);
+                }
+
+                return $query->where('meta_key', $value);
+            });
+        }
+
+        return $query;
+    }
+
+    public function scopeHasNotMeta(Builder $query, $meta, $value = null)
+    {
+        $meta = is_array($meta) ? $meta : [$meta => $value];
+
+        foreach ($meta as $key => $value) {
+            $query->whereHas('meta', function ($query) use ($key, $value) {
+                if (is_string($key)) {
+                    $query->where('meta_key', $key);
+
+                    return is_null($value) ? $query : $query->where('meta_value', '!=',$value);
                 }
 
                 return $query->where('meta_key', $value);

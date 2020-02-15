@@ -3,6 +3,7 @@
 namespace LaPress\Models;
 
 use LaPress\Models\Traits\HasMeta;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @author    Sebastian Szczepański
@@ -12,6 +13,7 @@ class Menu extends Taxonomy
 {
     use HasMeta;
 
+    const TAXONOMY_KEY = 'nav_menu';
     const NAV_MENU_LOCATION_KEY = 'nav_menu_locations';
 
     /**
@@ -28,6 +30,15 @@ class Menu extends Taxonomy
      * @var array
      */
     protected $hidden = ['term'];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(static::TAXONOMY_KEY, function (Builder $builder) {
+            $builder->whereTaxonomy(static::TAXONOMY_KEY);
+        });
+    }
 
     /**
      * @return string|null
@@ -51,8 +62,8 @@ class Menu extends Taxonomy
      */
     public static function location(string $key)
     {
-        $option = Option::collect(config('wordpress.theme.option_key'), true);
-        $menuId = $option->get(static::NAV_MENU_LOCATION_KEY)->get($key);
+        $option = Option::collect(config('wordpress.theme.option_key'));
+        $menuId = optional($option->get(static::NAV_MENU_LOCATION_KEY))->get($key);
 
         return static::where('term_taxonomy_id', $menuId) ?: new static();
     }
@@ -65,7 +76,9 @@ class Menu extends Taxonomy
      */
     public function items()
     {
-        return $this->belongsToMany(MenuItem::class, 'term_relationships', 'term_taxonomy_id', 'object_id')
-                    ->orderBy('menu_order');
+        return $this->belongsToMany($this->getLocalizedModel('MenuItem'), 'term_relationships', 'term_taxonomy_id', 'object_id')
+                    ->orderBy('menu_order')->where(function ($query){
+                        $query->hasMeta(MenuItem::META_PARENT_KEY, '0');
+                    });
     }
 }

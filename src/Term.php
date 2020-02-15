@@ -3,6 +3,9 @@
 namespace LaPress\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use LaPress\Models\Traits\HasMeta;
+use LaPress\Models\UrlGenerators\CategoryUrlGenerator;
+use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
 
 /**
  * @author    Sebastian Szczepański
@@ -10,6 +13,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Term extends Model
 {
+    use HasMeta;
+    /**
+     * @var array
+     */
+    protected $guarded = [];
     /**
      * @var string
      */
@@ -36,30 +44,24 @@ class Term extends Model
         return $this->hasOne(Taxonomy::class, 'term_id');
     }
 
+    /**
+     * @return mixed
+     */
     public function getAnchorAttribute()
     {
         return $this->name;
     }
 
+    /**
+     * @return mixed
+     */
     public function getUrlAttribute()
     {
-        $class = $this->getUrlGenerator();
+        $class = (new UrlGeneratorResolver())->resolve(
+            $this->taxonomy->taxonomy,
+            CategoryUrlGenerator::class
+        );
 
         return (new $class($this))->get();
-    }
-
-    public function getUrlGenerator()
-    {
-        $type = ucfirst($this->taxonomy->taxonomy);
-
-        if (class_exists('App\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'App\\UrlGenerators\\'.$type.'UrlGenerator';
-        }
-
-        if (class_exists('LaPress\\UrlGenerators\\'.$type.'UrlGenerator')) {
-            return 'LaPress\\UrlGenerators\\'.$type.'UrlGenerator';
-        }
-
-        return 'LaPress\\Models\\UrlGenerators\\CategoryUrlGenerator';
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace LaPress\Models;
 
 /**
  * @author    Sebastian Szczepański
@@ -12,7 +12,7 @@ class CustomMenuLink extends AbstractPost
      * @var string
      */
     protected $postType = 'nav_menu_item';
-
+    
     /**
      * @var array
      */

@@ -33,6 +33,11 @@ class Option extends Model
         'option_value',
     ];
 
+    private static function getCacheKey(string $key)
+    {
+        return md5('option.'.$key);
+    }
+
     /**
      * @param $value
      */
@@ -55,6 +60,16 @@ class Option extends Model
      */
     public function getValueAttribute()
     {
+        if (is_array($this->option_value)) {
+            return $this->option_value;
+        }
+
+        $json = json_decode($this->option_value, true);
+
+        if (json_last_error() == JSON_ERROR_NONE) {
+            return $json;
+        }
+
         return $this->option_value;
     }
 
@@ -64,8 +79,10 @@ class Option extends Model
      */
     public static function get(string $key)
     {
-        return optional(static::where('option_name', $key)->first())
-            ->value;
+        return \Cache::remember(static::getCacheKey($key), config('cache.ttl'), function () use ($key) {
+            return optional(static::where('option_name', $key)->first())
+                ->value;
+        });
     }
 
     /**
@@ -74,7 +91,7 @@ class Option extends Model
      */
     public static function collect($key)
     {
-        $collection = collect(static::get($key));
+        $collection = collect(static::get($key) ?: []);
 
         return $collection->map(function ($item) {
             if (is_array($item)) {
@@ -85,5 +102,15 @@ class Option extends Model
         });
     }
 
+    public static function set(string $key, $value)
+    {
+        $option = static::where('option_name', $key)->first() ?: static::create(['option_name'  => $key,
+                                                                                 'option_value' => '',
+        ]);
+        $option->update(['option_value' => $value]);
 
+        \Cache::forget(static::getCacheKey($key));
+
+        return $option;
+    }
 }

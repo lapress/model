@@ -2,36 +2,25 @@
 
 namespace LaPress\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
  */
 class Category extends Taxonomy
 {
+    const TAXONOMY_KEY = 'category';
     /**
-     * @return string|null
+     * @var array
      */
-    public function getNameAttribute()
-    {
-        return $this->term->name;
-    }
+    protected $guarded = [];
 
-    /**
-     * @return string|null
-     */
-    public function getUrlAttribute()
+    public static function boot()
     {
-        return $this->term->url;
-    }
-
-    /**
-     * @param string $name
-     * @return Category
-     */
-    public static function getByName(string $name)
-    {
-        return Category::whereHas('term', function ($query) use($name){
-            $query->whereSlug($name);
-        })->first();
+        parent::boot();
+        static::addGlobalScope(static::TAXONOMY_KEY, function (Builder $builder) {
+            $builder->whereTaxonomy(static::TAXONOMY_KEY);
+        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace LaPress\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use LaPress\Models\Traits\HasMeta;
 
@@ -11,8 +12,17 @@ use LaPress\Models\Traits\HasMeta;
  */
 class MenuItem extends AbstractPost
 {
+    const META_PARENT_KEY = '_menu_item_menu_item_parent';
     use HasMeta;
 
+    /**
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
+     * @var string
+     */
     protected $postType = 'nav_menu_item';
 
     /**
@@ -31,6 +41,7 @@ class MenuItem extends AbstractPost
         return optional($this->instance())->url;
     }
 
+
     /**
      * @return array
      */
@@ -48,12 +59,16 @@ class MenuItem extends AbstractPost
     public function instance(): ?Model
     {
         $className = $this->getRelationClassName();
-
         if (!class_exists($className)) {
             return null;
         }
+        $instance = app($className);
 
-        return app($className)->find($this->meta->_menu_item_object_id);
+        if ($instance instanceof Taxonomy) {
+            return $instance->whereTermId((int)$this->meta->_menu_item_object_id)->first();
+        }
+
+        return $instance->find((int)$this->meta->_menu_item_object_id);
     }
 
     /**
@@ -64,5 +79,38 @@ class MenuItem extends AbstractPost
         $key = $this->meta->_menu_item_object;
 
         return config('wordpress.posts.map.'.$key) ?: $key;
+    }
+
+    /**
+     * @param string $name
+     * @param string $url
+     * @param array  $options
+     * @return mixed
+     */
+    public static function addCustom(string $name, string $url, $options = [])
+    {
+        $post = static::create([
+            'post_title' => $name,
+        ]);
+
+        $post->saveMeta([
+            '_menu_item_type'             => 'custom',
+            '_menu_item_menu_item_parent' => 0,
+            '_menu_item_object_id'        => $post->ID,
+            '_menu_item_object'           => 'custom',
+            '_menu_item_target'           => $options['target'] ?? '',
+            '_menu_item_classes'          => $options['classess'] ?? '',
+            '_menu_item_url'              => $url,
+        ]);
+
+        return $post;
+    }
+
+    /**
+     * @return Collection|null
+     */
+    public function getItemsAttribute()
+    {
+        return self::hasMeta(self::META_PARENT_KEY, $this->ID)->orderBy('menu_order')->get();
     }
 }

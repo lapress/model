@@ -2,11 +2,14 @@
 
 namespace LaPress\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use LaPress\Content\Str;
 use LaPress\Models\Scopes\PostTypeScope;
 use LaPress\Models\Traits\HasMeta;
 use LaPress\Models\UrlGenerators\PostUrlGenerator;
+use LaPress\Models\UrlGenerators\UrlGeneratorResolver;
 use LaPress\Support\Filters\Filterable;
 use LaPress\Support\WordPress\WordPressPostContentFormatter;
 
@@ -23,6 +26,11 @@ abstract class AbstractPost extends Model
 
     const STATUS_POST_PUBLISHED = 'publish';
     const STATUS_POST_DRAFT = 'draft';
+
+    /**
+     * @var array
+     */
+    protected $guarded = [];
 
     /**
      * @var string
@@ -59,6 +67,18 @@ abstract class AbstractPost extends Model
      */
     protected $dates = ['post_date', 'post_modified'];
 
+
+    /**
+     * @var array
+     */
+    protected $attributes = [
+        'post_content_filtered' => '',
+        'to_ping'               => '',
+        'pinged'                => '',
+        'post_content'          => '',
+        'post_excerpt'          => '',
+    ];
+
     /**
      * @var array
      */
@@ -70,6 +90,9 @@ abstract class AbstractPost extends Model
         'to_ping',
     ];
 
+    /**
+     * @var array
+     */
     protected $with = ['meta'];
 
     /**
@@ -82,6 +105,19 @@ abstract class AbstractPost extends Model
         parent::boot();
 
         self::creating(function ($post) {
+            if (empty($post->post_name)) {
+                $post->post_name = str_slug($post->post_title);
+            }
+            $date = Carbon::now();
+
+            if (empty($post->post_date_gmt)) {
+                $post->post_date_gmt = $date->subHour();
+            }
+
+            if (empty($post->post_modified_gmt)) {
+                $post->post_modified_gmt = $date->subHour();
+            }
+
             $post->post_type = $post->getPostType();
         });
 
@@ -95,12 +131,28 @@ abstract class AbstractPost extends Model
     }
 
     /**
+     * @return bool
+     */
+    public function hasThumbnail()
+    {
+        return $this->thumbnail && !empty($this->thumbnail->size);
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function thumbnail()
     {
         return $this->hasOne(ThumbnailMeta::class, 'post_id')
                     ->where('meta_key', '_thumbnail_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate($format = null)
+    {
+        return $this->post_date->format($format ?: config('wordpress.date-format', 'd.m.Y'));
     }
 
     /**
@@ -115,6 +167,35 @@ abstract class AbstractPost extends Model
     }
 
     /**
+     * @param string $modelClass
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getTaxonomyRelationship(string $modelClass)
+    {
+        return $this->belongsToMany($modelClass, 'term_relationships', 'object_id', 'term_taxonomy_id')
+                    ->where('taxonomy', $modelClass::TAXONOMY_KEY);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo($this->getLocalizedModel('User'), 'post_author', 'ID');
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function getLocalizedModel(string $name): string
+    {
+        return class_exists('App\\Models\\'.$name)
+            ? 'App\\Models\\'.$name
+            : 'LaPress\\Models\\'.$name;
+    }
+
+    /**
      * attachments
      * Define a relationship.
      *
@@ -125,7 +206,6 @@ abstract class AbstractPost extends Model
         return $this->hasMany(Post::class, 'post_parent')
                     ->where('post_type', 'attachment');
     }
-
 
     /**
      * @param Builder $query
@@ -165,11 +245,35 @@ abstract class AbstractPost extends Model
     }
 
     /**
+     * @return bool
+     */
+    public function isPublic(): bool
+    {
+        return $this->post_status == static::STATUS_POST_PUBLISHED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDraft(): bool
+    {
+        return $this->post_status == static::STATUS_POST_DRAFT;
+    }
+
+    /**
      * @return string
      */
     public function getPostType(): string
     {
         return $this->postType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPostTypePlural(): string
+    {
+        return str_plural($this->getPostType());
     }
 
     /**
@@ -204,16 +308,42 @@ abstract class AbstractPost extends Model
         return $this->supportedTaxonomies;
     }
 
+    public function postFormats()
+    {
+        return $this->getTaxonomyRelationship($this->getLocalizedModel('PostFormat'));
+    }
+
+    public function getPostFormatAttribute()
+    {
+        return optional($this->getPostFormat())->getName();
+    }
+
+    public function getPostFormat()
+    {
+        return $this->postFormats->first();
+    }
+
+    /**
+     * @return null|string
+     */
     public function getAnchorAttribute(): ?string
     {
         return $this->post_title;
     }
 
+    /**
+     * @return null|string
+     */
     public function getUrlAttribute(): ?string
     {
-        return (new PostUrlGenerator($this))->get();
+        $class = (new UrlGeneratorResolver())->resolve($this->post_type);
+
+        return (new $class($this))->get();
     }
 
+    /**
+     * @return string
+     */
     public function getClassesAttribute(): string
     {
         $classes = $this->meta->_menu_item_classes;
@@ -225,17 +355,42 @@ abstract class AbstractPost extends Model
         return collect($classes)->implode(' ');
     }
 
-
+    /**
+     * @return string
+     */
     public function getBodyAttribute()
     {
         return WordPressPostContentFormatter::format($this->post_content);
     }
 
-    public function categories()
+    /**
+     * @return mixed|string
+     */
+    public function getExcerptAttribute()
     {
-        return $this->belongsToMany(Category::class, 'term_relationships', 'object_id', 'term_taxonomy_id')
-                    ->where('taxonomy', 'category');
+        if ($this->post_excerpt) {
+            return $this->post_excerpt;
+        }
+
+        return Str::limit(
+            $this->post_content,
+            config('wordpress.excerpt_length', 300)
+        );
     }
-    
-    
+
+    /**
+     * @param $query
+     */
+    public function scopeRecent($query)
+    {
+        $query->latest('post_date')->published();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPublished(): bool
+    {
+        return $this->post_status === static::STATUS_POST_PUBLISHED;
+    }
 }
