@@ -16,6 +16,13 @@ class MetaCollection extends Collection
      */
     public function __get($key)
     {
+        $result = json_decode($this->getFlattened()->get($key), true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($result)) {
+            return collect($result);
+        }
+        
+
         return $this->getFlattened()->get($key);
     }
 
